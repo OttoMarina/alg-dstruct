@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
 #define MAXN 100000
 #pragma warning (disable:4996)
 typedef struct vertex
@@ -100,6 +102,24 @@ void add_connection(graph_t* graph, int first_connected, int second_connected)
 }
 
 
+void free_graph(graph_t* graph) {
+    int i = 0;
+    for (; i < graph->number_of_vert; i++) {
+        free(graph->adjLists[i]);
+    }
+    free(graph->adjLists);
+    free(graph->visited);
+    free(graph);
+}
+
+
+void MemoryLeaks(void) {
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+    _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
+}
+
+
 int main(void)
 {
     int size_of_graph;
@@ -118,6 +138,8 @@ int main(void)
     }
 
     dfs(new_graph, 0);
+	free_graph(new_graph);
+    MemoryLeaks();
 
     return 0;
 }
