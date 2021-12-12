@@ -135,17 +135,22 @@ int main(void) {
 	uint N, B;
 	if (fscanf(file, "%u\n%u", &B, &N) != 2) {
 		fprintf(stderr, "Reading B and N error!\n");
+		fclose(file);
 		return READING_ERROR;
 	}
 
 	plentyElem_t* plenty = (plentyElem_t*)malloc(N * sizeof(plentyElem_t));
 	if (plenty == NULL) {
 		fprintf(stderr, "Allocation memory error!\n");
+		free(plenty);
+		fclose(file);
 		return ALLOCATION_ERROR;
 	}
 	for (uint i = 0; i < N; i++) {
 		if (fscanf(file, "%u ", &plenty[i].size) != 1) {
 			fprintf(stderr, "Reading plenty error!\n");
+			free(plenty);
+			fclose(file);
 			return READING_ERROR;
 		}
 		plenty[i].isUsed = FALSE;
@@ -155,6 +160,8 @@ int main(void) {
 	int checkEndFile;
 	if (fscanf(file, "%d", &checkEndFile) != -1) {
 		fprintf(stderr, "Plenty hasn't been initialized completely\n");
+		free(plenty);
+		fclose(file);
 		return INITIALIZATION_ERROR;
 	}
 
@@ -166,11 +173,14 @@ int main(void) {
 	file = fopen("output.txt", "wt");
 	if (file == NULL) {
 		fprintf(stderr, "Opening file error!\n");
+		free(plenty);
+		FreeStack(curSolution);
 		return FILE_ERROR;
 	}
 
 	PrintSolution(curSolution, file);
 	fclose(file);
+	free(plenty);
 	FreeStack(curSolution);
 
 	return 0;
